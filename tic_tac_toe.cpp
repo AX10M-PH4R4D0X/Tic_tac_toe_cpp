@@ -8,11 +8,18 @@ using namespace std;
 
 void DrawBoardLine(char *blanks);
 
-void PlayerMove(char *blanks , char player);
+
+void PlayerMove1(char *blanks , char player1);
+
+void PlayerMove2(char *blanks , char player2);
 
 void ComputerMove(char *blanks , char computer);
 
-bool CheckWinner(char *blanks , char player , char computer);
+
+bool CheckWinnerPvE(char *blanks , char player , char computer);
+
+bool CheckWinnerPvP(char *blanks , char player1 , char player2);
+
 
 bool CheckTie(char *blanks);
 
@@ -21,84 +28,203 @@ bool CheckTie(char *blanks);
 
 
 int main() {
-
-    char blanks[9] = {' ',' ',' ',' ',' ',' ',' ',' ',' '};
-
-    char player;
-    char computer;
-    bool running = true; 
-
-
-    cout << '\n' << "Please choice X/O" << '\n';
-    cin >> player;
-
-
-
-    switch (toupper(player)) {
     
-    case 'X':
+    char keep_play;
+
+    do
+    {
+        char blanks[9] = {' ',' ',' ',' ',' ',' ',' ',' ',' '};
+
     
-    computer = 'O';
-    break;
-    
+        char game_type;
 
+        char player1;
 
-    case 'O':
+        char player2;
 
-    computer = 'X';
-    break;
-
-
-    default:
-        cout << '\n' << "Invalid input please choice X or O";
-        break;
-    }
+        char computer;
 
 
 
-    DrawBoardLine(blanks);
+        cout << "\nChoose game type -- '1' for PvE | '2' for PvP\n";
+        cin >> game_type;
+
+        if (game_type == '1') {
+
+            bool running = true;
+
+            cout << "\nPlease choose X or O\n";
+            cin >> player1;
+
+            switch (toupper(player1)) {
+
+            case 'X':
+
+                computer ='O';
+                break;
+                
+                
+            case 'O':
+
+                computer ='X';
+                break;
 
 
-    while (running) {
-        
+            default:
 
-        PlayerMove(blanks , player);
-        DrawBoardLine(blanks);
+                cout << "\nInvalid choice!\n";
+                break;
 
-        if (CheckWinner(blanks , player , computer)) {
+            } 
             
-            running = false;
-            break;
+            
+            
+            while (running) {
 
-        } else if (CheckTie(blanks)) {
+                cout << "\n----------------------\n";
+                DrawBoardLine(blanks);
+                cout << "\n----------------------\n";
+                
 
-            running = false;
-            break;
+                PlayerMove1(blanks , player1);
+
+                cout << "\n----------------------\n";
+                DrawBoardLine(blanks);
+                cout << "\n----------------------\n";
+
+                
+                if (CheckWinnerPvE(blanks , player1 , computer)) {
+                    
+                    running = false;
+                    break;
+
+                } else if (CheckTie(blanks)) {
+
+                    running = false;
+                    break;
+
+                }
+                
+
+
+                ComputerMove(blanks , computer);
+
+                cout << "\n----------------------\n";
+                DrawBoardLine(blanks);
+                cout << "\n----------------------\n";
+
+
+                if (CheckWinnerPvE(blanks , player1 , computer)) {
+                    
+                    running = false;
+                    break;
+
+                } else if (CheckTie(blanks)) {
+
+                    running = false;
+                    break;
+                    
+                }
+            
+            }
+            
+            cout << "\n--THX FOR PLAYING--\n";
+            
+
+        } else if (game_type == '2') {
+
+            bool running = true;
+            
+            cout << "\nPlease choose X or O\n";
+            cin >> player1;
+
+            switch (toupper(player1)) {
+
+            case 'X':
+
+                player2 ='O';
+                break;
+                
+                
+            case 'O':
+
+                player2 ='X';
+                break;
+
+
+            default:
+
+                cout << "\nInvalid choice!\n";
+                break;
+                
+            }
+            
+
+
+            while (running) {
+
+                cout << "\n----------------------\n";
+                DrawBoardLine(blanks);
+                cout << "\n----------------------\n";
+                
+
+                PlayerMove1(blanks , player1);
+
+                cout << "\n----------------------\n";
+                DrawBoardLine(blanks);
+                cout << "\n----------------------\n";
+
+                
+                if (CheckWinnerPvP(blanks , player1 , player2)) {
+                    
+                    running = false;
+                    break;
+
+                } else if (CheckTie(blanks)) {
+
+                    running = false;
+                    break;
+
+                }
+                
+
+
+                PlayerMove2(blanks , player2);
+
+                cout << "\n----------------------\n";
+                DrawBoardLine(blanks);
+                cout << "\n----------------------\n";
+
+
+                if (CheckWinnerPvP(blanks , player1 , player2)) {
+                    
+                    running = false;
+                    break;
+
+                } else if (CheckTie(blanks)) {
+
+                    running = false;
+                    break;
+                    
+                }
+            
+            }
+
+            cout << "\n--THX FOR PLAYING--\n";
+
+            
+        } else {
+
+            cout << "\nThere is no other option\n";
 
         }
         
+        cout << "\nDo you want play again?\nY for yes! | N for no!\n";
+        cin >> keep_play;
 
+    } while (toupper(keep_play) == 'Y');
 
-        ComputerMove(blanks , computer);
-        DrawBoardLine(blanks);
-
-        if (CheckWinner(blanks , player , computer)) {
-            
-            running = false;
-            break;
-
-        } else if (CheckTie(blanks)) {
-
-            running = false;
-            break;
-            
-        }
-        
-
-    }
-
-    cout << "\n*THX FOR PLAYING!*\n";
-    
+    cout << "\nExiting the game...\n";
 
     return 0 ;
 }
@@ -132,7 +258,7 @@ void DrawBoardLine(char *blanks) {
 
 
 
-void PlayerMove(char *blanks , char player) {
+void PlayerMove1(char *blanks , char player1) {
 
     int number;
 
@@ -140,14 +266,44 @@ void PlayerMove(char *blanks , char player) {
     do {
 
 
-        cout << '\n' << "Please choose a spot to place a marker [1-9]" << '\n';
-        cin >> number; 
+        cout << "\nPlease choose a spot to place a marker [1-9]\n";
+        cin >> number;
+
         number--;
 
     
         if (blanks[number] == ' ') {
             
-            blanks[number] = player;
+            blanks[number] = player1;
+            break;
+
+        }
+        
+
+    } while (!number > 0 || number < 8);
+    
+
+}
+
+
+
+void PlayerMove2(char *blanks , char player2) {
+
+    int number;
+
+
+    do {
+
+
+        cout << "\nPlease choose a spot to place a marker [1-9]\n";
+        cin >> number;
+
+        number--;
+
+    
+        if (blanks[number] == ' ') {
+            
+            blanks[number] = player2;
             break;
 
         }
@@ -184,39 +340,39 @@ void ComputerMove(char *blanks , char computer) {
 
 
 
-bool CheckWinner(char *blanks , char player , char computer) {
+bool CheckWinnerPvE(char *blanks , char player1 , char computer) {
 
     if ((blanks[0] != ' ') && (blanks[0] == blanks[1]) && (blanks[1] == blanks[2])) {
         
-        blanks[0] == player ? cout << "You win!\n" : cout << "You Lose!\n";
+        blanks[0] == player1 ? cout << "You win!\n" : cout << "You Lose!\n";
 
     } else if ((blanks[3] != ' ') && (blanks[3] == blanks[4]) && (blanks[4] == blanks[5])) {
 
-        blanks[3] == player ? cout << "You win!\n" : cout << "You Lose!\n";
+        blanks[3] == player1 ? cout << "You win!\n" : cout << "You Lose!\n";
     
     } else if ((blanks[6] != ' ') && (blanks[6] == blanks[7]) && (blanks[7] == blanks[8])) {
 
-        blanks[6] == player ? cout << "You win!\n" : cout << "You Lose!\n";
+        blanks[6] == player1 ? cout << "You win!\n" : cout << "You Lose!\n";
     
     } else if ((blanks[0] != ' ') && (blanks[0] == blanks[3]) && (blanks[3] == blanks[6])) {
 
-        blanks[3] == player ? cout << "You win!\n" : cout << "You Lose!\n";
+        blanks[3] == player1 ? cout << "You win!\n" : cout << "You Lose!\n";
     
     } else if ((blanks[1] != ' ') && (blanks[1] == blanks[4]) && (blanks[4] == blanks[7])) {
 
-        blanks[1] == player ? cout << "You win!\n" : cout << "You Lose!\n";
+        blanks[1] == player1 ? cout << "You win!\n" : cout << "You Lose!\n";
     
     } else if ((blanks[2] != ' ') && (blanks[2] == blanks[5]) && (blanks[5] == blanks[8])) {
 
-        blanks[2] == player ? cout << "You win!\n" : cout << "You Lose!\n";
+        blanks[2] == player1 ? cout << "You win!\n" : cout << "You Lose!\n";
     
     } else if ((blanks[0] != ' ') && (blanks[0] == blanks[4]) && (blanks[4] == blanks[8])) {
 
-        blanks[0] == player ? cout << "You win!\n" : cout << "You Lose!\n";
+        blanks[0] == player1 ? cout << "You win!\n" : cout << "You Lose!\n";
     
     } else if ((blanks[2] != ' ') && (blanks[2] == blanks[4]) && (blanks[4] == blanks[6])) {
 
-        blanks[2] == player ? cout << "You win!\n" : cout << "You Lose!\n";
+        blanks[2] == player1 ? cout << "You win!\n" : cout << "You Lose!\n";
     
     } else {
 
@@ -227,6 +383,53 @@ bool CheckWinner(char *blanks , char player , char computer) {
     return true;
 
 }
+
+
+
+bool CheckWinnerPvP(char *blanks , char player1 , char player2) {
+
+    if ((blanks[0] != ' ') && (blanks[0] == blanks[1]) && (blanks[1] == blanks[2])) {
+        
+        blanks[0] == player1 ? cout << "You win P1!\n" : cout << "You win P2!\n";
+
+    } else if ((blanks[3] != ' ') && (blanks[3] == blanks[4]) && (blanks[4] == blanks[5])) {
+
+        blanks[3] == player1 ? cout << "You win P1!\n" : cout << "You win P2!\n";
+    
+    } else if ((blanks[6] != ' ') && (blanks[6] == blanks[7]) && (blanks[7] == blanks[8])) {
+
+        blanks[6] == player1 ? cout << "You win P1!\n" : cout << "You win P2!\n";
+    
+    } else if ((blanks[0] != ' ') && (blanks[0] == blanks[3]) && (blanks[3] == blanks[6])) {
+
+        blanks[3] == player1 ? cout << "You win P1!\n" : cout << "You win P2!\n";
+    
+    } else if ((blanks[1] != ' ') && (blanks[1] == blanks[4]) && (blanks[4] == blanks[7])) {
+
+        blanks[1] == player1 ? cout << "You win P1!\n" : cout << "You win P2!\n";
+    
+    } else if ((blanks[2] != ' ') && (blanks[2] == blanks[5]) && (blanks[5] == blanks[8])) {
+
+        blanks[2] == player1 ? cout << "You win P1!\n" : cout << "You win P2!\n";
+    
+    } else if ((blanks[0] != ' ') && (blanks[0] == blanks[4]) && (blanks[4] == blanks[8])) {
+
+        blanks[0] == player1 ? cout << "You win P1!\n" : cout << "You win P2!\n";
+    
+    } else if ((blanks[2] != ' ') && (blanks[2] == blanks[4]) && (blanks[4] == blanks[6])) {
+
+        blanks[2] == player1 ? cout << "You win P1!\n" : cout << "You win P2!\n";
+    
+    } else {
+
+        return false;
+
+    }
+    
+    return true;
+
+}
+
 
 
 
